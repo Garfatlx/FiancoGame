@@ -1,4 +1,3 @@
-package FiancoGame;
 
 public class Piece {
     private String color;
