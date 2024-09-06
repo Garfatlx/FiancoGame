@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class Gameboard{
 
@@ -53,6 +54,16 @@ public class Gameboard{
     public boolean movePiece(int startX, int startY, int endX, int endY) {
         // Implement piece movement logic, including capturing and kinging
         Piece piece = board[startX][startY];
+        ArrayList<int[]> possibleCaptures = scanCapture(piece.getColor());
+        if(possibleCaptures.size() > 0){
+            for(int[] capture : possibleCaptures){
+                if(capture[0] == startX && capture[1] == startY && capture[2] == endX && capture[3] == endY){
+                    performCapture(startX, startY, endX, endY);
+                    return true;
+                }
+            }
+            System.out.println("Invalid move. Please perform a capture.");
+        }
         if (piece != null && isValidMove(piece, startX, startY, endX, endY)) {
             board[endX][endY] = piece;
             board[startX][startY] = null;
@@ -72,7 +83,100 @@ public class Gameboard{
 
     private boolean isValidMove(Piece piece, int startX, int startY, int endX, int endY) {
         // Implement move validation logic
+        if(piece.getColor().equals("black")){
+            if(endX < startX){
+                return false;
+            }
+
+        } else {
+            if(endX > startX){
+                return false;
+            }
+        }
         return true;
+    }
+
+    public ArrayList<int[]> possibleMoves(Player player){
+        // Implement scan for possible moves
+        ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
+        possibleMoves=scanCapture(player.getColor());
+        if(possibleMoves.size() > 0){
+            System.out.println("You must perform a capture.");
+            return possibleMoves;
+        }
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(board[i][j] != null && board[i][j].getColor().equals(player.getColor())){
+                    if(board[i][j].getColor().equals("black")){
+                        if(i+1 < 9 && j < 9 && board[i+1][j] == null){
+                            possibleMoves.add(new int[]{i, j, i+1, j});
+                        } 
+                        if(i < 9 && j-1 >= 0 && board[i][j-1] == null){
+                            possibleMoves.add(new int[]{i, j, i, j-1});
+                        } 
+                        if(i < 9 && j+1 < 9 && board[i][j+1] == null){
+                            possibleMoves.add(new int[]{i, j, i, j+1});
+                        } 
+                    } else if(board[i][j].getColor().equals("white")){
+                        if(i-1 >= 0 && j < 9 && board[i-1][j] == null){
+                            possibleMoves.add(new int[]{i, j, i-1, j});
+                        } 
+                        if(i >= 0 && j+1 < 9 && board[i][j+1] == null){
+                            possibleMoves.add(new int[]{i, j, i, j+1});
+                        }
+                        if(i >= 0 && j-1 >= 0 && board[i][j-1] == null){
+                            possibleMoves.add(new int[]{i, j, i, j-1});
+                        }
+                    }
+                }
+            }
+        }
+        return possibleMoves;
+    }
+    public ArrayList<int[]> scanCapture(String color) {
+        // Implement scan for possible captures
+        ArrayList<int[]> possibleCaptures= new ArrayList<int[]>();
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(board[i][j] != null){
+                    if(board[i][j].getColor().equals(color)){
+                        if(board[i][j].getColor().equals("black")){
+                            if(i+2 < 9 && j+2 < 9 && board[i+2][j+2] == null && board[i+1][j+1] != null && board[i+1][j+1].getColor().equals("white")){
+                                possibleCaptures.add(new int[]{i, j, i+2, j+2});
+                                
+                            } 
+                            if(i+2 < 9 && j-2 >= 0 && board[i+2][j-2] == null && board[i+1][j-1] != null && board[i+1][j-1].getColor().equals("white")){
+                                possibleCaptures.add(new int[]{i, j, i+2, j-2});
+                            }
+                        } else if(board[i][j].getColor().equals("white")){
+                            if(i-2 >= 0 && j+2 < 9 && board[i-2][j+2] == null && board[i-1][j+1] != null && board[i-1][j+1].getColor().equals("black")){
+                                possibleCaptures.add(new int[]{i, j, i-2, j+2});
+                            }
+                            if(i-2 >= 0 && j-2 >= 0 && board[i-2][j-2] == null && board[i-1][j-1] != null && board[i-1][j-1].getColor().equals("black")){
+                                possibleCaptures.add(new int[]{i, j, i-2, j-2});
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        }
+        return possibleCaptures;
+    }
+
+
+
+    private boolean performCapture(int startX, int startY, int endX, int endY){
+        // Implement capture logic
+        if(Math.abs(startX - endX) == 2 && Math.abs(startY - endY) == 2){
+            int midX = (startX + endX) / 2;
+            int midY = (startY + endY) / 2;
+            if(board[midX][midY] != null && !board[midX][midY].getColor().equals(board[startX][startY].getColor())){
+                board[midX][midY] = null;
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean checkWinCondition() {
