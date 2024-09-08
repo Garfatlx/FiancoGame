@@ -189,4 +189,7 @@ public class Gameboard{
         // End the game
     }   
 
+    public Piece[][] getBoard() {
+        return board;
+    }
 }
