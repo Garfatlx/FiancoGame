@@ -5,6 +5,7 @@ public class Gameboard{
     private Piece[][] board;
     private Player player1;
     private Player player2;
+    private Player currentPlayer;
 
     public Gameboard(Player player1, Player player2) {
         board = new Piece[9][9];
@@ -35,6 +36,8 @@ public class Gameboard{
         board[6][6] = new Piece("white", 6, 6);
         board[5][3] = new Piece("white", 5, 3);
         board[5][5] = new Piece("white", 5, 5);
+
+        this.currentPlayer = player1;
     }
 
     public void printBoard() {
@@ -54,11 +57,20 @@ public class Gameboard{
     public boolean movePiece(int startX, int startY, int endX, int endY) {
         // Implement piece movement logic, including capturing and kinging
         Piece piece = board[startX][startY];
+        if(piece == null){
+            System.out.println("Invalid move. Please select a piece.");
+            return false;
+        }   
+        if(!piece.getColor().equals(currentPlayer.getColor())){
+            System.out.println("Invalid move. Please select a piece of your own color.");
+            return false;
+        }
         ArrayList<int[]> possibleCaptures = scanCapture(piece.getColor());
         if(possibleCaptures.size() > 0){
             for(int[] capture : possibleCaptures){
                 if(capture[0] == startX && capture[1] == startY && capture[2] == endX && capture[3] == endY){
                     performCapture(startX, startY, endX, endY);
+                    currentPlayer = (currentPlayer == player1) ? player2 : player1;
                     return true;
                 }
             }
@@ -76,6 +88,7 @@ public class Gameboard{
             if ((piece.getColor().equals("black") && endX == 7)) {
                 endGame(player2);
             }
+            currentPlayer = (currentPlayer == player1) ? player2 : player1;
             return true;
         }
         return false;
@@ -191,5 +204,8 @@ public class Gameboard{
 
     public Piece[][] getBoard() {
         return board;
+    }
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 }
