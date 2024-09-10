@@ -48,7 +48,7 @@ public class Bot {
     private List<int[]> generateMoves(Gameboard state) {
 
         // Implement move generation logic
-        return state.possibleMoves(botplayer);
+        return state.possibleMoves();
     }
 
     // Apply a move to the board

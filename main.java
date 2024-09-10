@@ -10,11 +10,13 @@ class Main {
         gameboard.printBoard();
         gameboard.movePiece(5, 3, 4, 3);
         gameboard.printBoard();
-        gameboard.movePiece(4, 3, 4, 4);
+        gameboard.movePiece(3, 3, 3, 2);
         gameboard.printBoard();
-        ArrayList<int[]> possibleCaptures = gameboard.possibleMoves(player2);
+        ArrayList<int[]> possibleCaptures = gameboard.possibleMoves();
         for(int[] capture : possibleCaptures){
             System.out.println("Capture: " + capture[0] + ", " + capture[1] + " to " + capture[2] + ", " + capture[3]);
         }
+
+        
     }
 }

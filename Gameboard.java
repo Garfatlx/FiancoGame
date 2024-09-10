@@ -75,6 +75,7 @@ public class Gameboard{
                 }
             }
             System.out.println("Invalid move. Please perform a capture.");
+            return false;
         }
         if (piece != null && isValidMove(piece, startX, startY, endX, endY)) {
             board[endX][endY] = piece;
@@ -90,36 +91,56 @@ public class Gameboard{
             }
             currentPlayer = (currentPlayer == player1) ? player2 : player1;
             return true;
+        }else{
+            System.out.println("invalid move");
         }
         return false;
     }
 
     private boolean isValidMove(Piece piece, int startX, int startY, int endX, int endY) {
         // Implement move validation logic
+        if(endX<0 || endX>=9 || endY<0 || endY>=9 ){
+            return false;
+        }
+        if(board[endX][endY]!=null){
+            return false;
+        }
         if(piece.getColor().equals("black")){
-            if(endX < startX){
-                return false;
+            if(endX-startX==1){
+                if (endY==startY) {
+                    return true;
+                }
             }
-
+            if(endX==startX){
+                if(Math.abs(startY-endY)==1){
+                    return true;
+                }
+            }
         } else {
-            if(endX > startX){
-                return false;
+            if(endX-startX==-1){
+                if (endY==startY) {
+                    return true;
+                }
+            }
+            if(endX==startX){
+                if(Math.abs(startY-endY)==1){
+                    return true;
+                }
             }
         }
-        return true;
+        return false;
     }
 
-    public ArrayList<int[]> possibleMoves(Player player){
+    public ArrayList<int[]> possibleMoves(){
         // Implement scan for possible moves
         ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
-        possibleMoves=scanCapture(player.getColor());
+        possibleMoves=scanCapture(currentPlayer.getColor());
         if(possibleMoves.size() > 0){
-            System.out.println("You must perform a capture.");
             return possibleMoves;
         }
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
-                if(board[i][j] != null && board[i][j].getColor().equals(player.getColor())){
+                if(board[i][j] != null && board[i][j].getColor().equals(currentPlayer.getColor())){
                     if(board[i][j].getColor().equals("black")){
                         if(i+1 < 9 && j < 9 && board[i+1][j] == null){
                             possibleMoves.add(new int[]{i, j, i+1, j});
