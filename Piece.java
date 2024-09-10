@@ -1,10 +1,10 @@
 
 public class Piece {
-    private String color;
+    private char color;
     private int x;
     private int y;
 
-    public Piece(String color, int x, int y) {
+    public Piece(char color, int x, int y) {
         
         this.color = color;
         this.x = x;
@@ -12,7 +12,7 @@ public class Piece {
     }
 
 
-    public String getColor() {
+    public char getColor() {
         return color;
     }
 

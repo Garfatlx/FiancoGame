@@ -6,10 +6,10 @@ public class Bot {
     private Gameboard state; // The gameboard this bot is playing on
 
     public Bot(Player player,Gameboard state) {
-        if(player.getColor().equals("white")){
-            Player player2 = new Player("rival", "black");
+        if(player.getColor()== 'w'){
+            Player player2 = new Player("rival", 'b');
         }else{
-            Player player2 = new Player("rival", "white");
+            Player player2 = new Player("rival", 'w');
         }
         
         this.botplayer = player;
