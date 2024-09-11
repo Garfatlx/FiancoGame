@@ -17,19 +17,26 @@ public class Bot {
     }
 
     // Negamax search function
-    public int negamax(Gameboard state, int depth, int color) {
+    public int negamax(Gameboard state, int alpha, int beta, int depth) {
         if (isGameOver(state) || depth == 0) {
-            return color * evaluateBoard(state);
+            return evaluateBoard(state);
         }
-
-        int maxEval = Integer.MIN_VALUE;
+        int score = Integer.MIN_VALUE;
         for (int[] move : generateMoves(state)) {
             applyMove(state, move);
-            int eval = -negamax(state, depth - 1, -color);
+            int eval = -negamax(state, -beta,-alpha, depth - 1);
             undoMove(state, move);
-            maxEval = Math.max(maxEval, eval);
+            if(eval > score){
+                score = eval;
+            }
+            if(score > alpha){
+                alpha = score;
+            }
+            if(alpha >= beta){
+                break;
+            }
         }
-        return maxEval;
+        return score;
     }
 
     // Check if the game is over
@@ -53,11 +60,12 @@ public class Bot {
 
     // Apply a move to the board
     private void applyMove(Gameboard state, int[] move) {
-        // Implement move application logic
+        state.movePiece(move[0], move[1], move[2], move[3]);
     }
 
     // Undo a move
     private void undoMove(Gameboard state, int[] move) {
         // Implement move undo logic
+        state.undoMove(move[0], move[1], move[2], move[3]);
     }
 }

@@ -97,6 +97,14 @@ public class Gameboard{
         return false;
     }
 
+    public boolean undoMove(int startX, int startY, int endX, int endY) {
+        // Implement move undo logic
+        Piece piece = board[endX][endY];
+        board[startX][startY] = piece;
+        board[endX][endY] = null;
+        piece.move(startX, startY);
+        return true;
+    }
     private boolean isValidMove(Piece piece, int startX, int startY, int endX, int endY) {
         // Implement move validation logic
         if(endX<0 || endX>=9 || endY<0 || endY>=9 ){
