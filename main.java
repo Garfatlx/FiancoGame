@@ -3,8 +3,8 @@ import java.util.ArrayList;
 
 class Main {
     public static void main(String[] args) {
-        Player player1 = new Player("Alice", 'w');
-        Player player2 = new Player("Bob", 'b');
+        Player player1 = new Player("Alice", 1);
+        Player player2 = new Player("Bob", -1);
 
         Gameboard gameboard = new Gameboard(player1, player2);
         gameboard.printBoard();

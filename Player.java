@@ -3,10 +3,10 @@ import java.util.ArrayList;
 
 public class Player {
     private String name;
-    private char color;
+    private int color;
     private ArrayList<Piece> pieces;
 
-    public Player(String name, char color) {
+    public Player(String name, int color) {
         this.name = name;
         this.color = color;
     }
@@ -15,7 +15,7 @@ public class Player {
         return name;
     }
 
-    public char getColor() {
+    public int getColor() {
         return color;
     }
     public void setPieces(ArrayList<Piece> pieces){
