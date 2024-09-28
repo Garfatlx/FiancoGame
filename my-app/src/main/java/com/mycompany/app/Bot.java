@@ -1,3 +1,4 @@
+package com.mycompany.app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class Bot {
         return hash;
     }
 
-    private class Zobrist{
+    private static class Zobrist{
         static long[][][] zobristTable = new long[10][10][3];
         static{
             for(int i=0; i<9; i++){
