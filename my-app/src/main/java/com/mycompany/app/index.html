@@ -4,23 +4,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Test</title>
+    <title>WebSocket</title>
 </head>
 <body>
-    <h1>WebSocket Test</h1>
+    <h1>Fianco</h1>
+    <h2 id="status">Player 1</h2>
+    <table id="board"></table>
+
+
+
+
     <script>
+        var clicknumber = 0;
+        var startlocation;
+        var endlocation;
+        const board = document.getElementById('board');
+        for (let i = 0; i < 9; i++) {
+            const row = document.createElement('tr');
+            for (let j = 0; j < 9; j++) {
+                const cell = document.createElement('td');
+                cell.id = `${i}${j}`;
+                row.appendChild(cell);
+
+                cell.addEventListener('click', function() {
+                    if (clicknumber == 0) {
+                        cell.style.backgroundColor = "lightblue";
+                        clicknumber = 1;
+                        startlocation = cell.id;
+                    } else {
+                        document.getElementById(startlocation).style.backgroundColor = "white";
+                        endlocation = cell.id;
+                        clicknumber = 0;
+
+                        const data = startlocation + endlocation;
+                        socket.send(data);
+                    }
+                    
+                });
+            }
+            board.appendChild(row);
+        }
+
         // Create a new WebSocket connection
         const socket = new WebSocket('ws://localhost:8887');
 
         // When the connection is open
         socket.onopen = function(event) {
             console.log("Connected to WebSocket server");
-            socket.send("Hello, Server!");  // Send a message to the server
         };
 
         // When a message is received from the server
         socket.onmessage = function(event) {
             console.log("Message from server: ", event.data);
+            updateBoard(event.data);
         };
 
         // When the WebSocket connection is closed
@@ -32,6 +68,51 @@
         socket.onerror = function(error) {
             console.error("WebSocket Error: ", error);
         };
+
+        function parseBoard(boardinfo) {
+            // Parse the board from a Json format of 2 D array to a 2D array of integers
+
+            const parsedBoard = JSON.parse(boardinfo);
+            return parsedBoard;
+        }
+        function updateBoard(boardinfo) {
+            // Update the board with the new values
+            const parsedBoardinfo = parseBoard(boardinfo);
+            const parsedBoard = JSON.parse(parsedBoardinfo[0]);
+            document.getElementById('status').innerText = parsedBoardinfo[1];
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.getElementById(`${i}${j}`);
+                    if (parsedBoard[i][j] === -1) {
+                        cell.innerHTML = '<div style="width: 27px; height: 27px; background-color: black; border-radius: 50%;"></div>';
+                    } else if (parsedBoard[i][j] === 1) {
+                        cell.innerHTML = '<div style="width: 25px; height: 25px; background-color: white; border-radius: 50%;border:solid;"></div>';
+                    } else {
+                        cell.innerText = '';
+                    }
+                }
+            }
+        }
+
+        
     </script>
 </body>
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 360px;
+        height: 360px;
+    }
+    td {
+        border: 2px solid black;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+    }
+</style>
+
 </html>

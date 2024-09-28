@@ -10,6 +10,8 @@ public class Gameboard{
     private Player player1;
     private Player player2; 
     private int currentPlayer;
+    private boolean gameover = false;
+    private Player winner;
     private ArrayList<int[]> allMoves = new ArrayList<int[]>();
 
     public Gameboard(Player player1, Player player2) {
@@ -91,13 +93,8 @@ public class Gameboard{
             board[endX][endY] = piece;
             board[startX][startY] = 0;
 
-            if((piece==1 && endX == 0) ){
-                endGame(player1);
-            }
-            // Check for kinging
-            if ((piece==-1 && endX == 7)) {
-                endGame(player2);
-            }
+            int wincondition=checkWinCondition();
+            
             currentPlayer = (currentPlayer == 1) ? -1 : 1;
             allMoves.add(new int[]{startX, startY, endX, endY});
             return true;
@@ -228,24 +225,51 @@ public class Gameboard{
             if(board[midX][midY] != 0 && board[midX][midY]!=board[startX][startY]){
                 board[midX][midY] = 0;
                 board[endX][endY] = board[startX][startY];
+                board[startX][startY] = 0;
+                int wincondition=checkWinCondition();
+                
                 return true;
             }
         }
         return false;
     }
 
-    public boolean checkWinCondition() {
+    public int checkWinCondition() {
+        for(int i=0; i<9; i++){
+            if (board[0][i] == 1) {
+                gameover = true;
+                endGame(player1);
+                return 1;
+            }
+            if (board[8][i] == -1) {
+                gameover = true;
+                endGame(player2);
+                return -1;
+            }
+        }
+        if(possibleMoves().size() == 0){
+            gameover = true;
+            System.out.println("No possible moves. Draw!");
+            return 2;
+        }
         // Check for win condition
-        return false;
+        return 0;
     }
 
     public void endGame(Player player) {
+        winner = player;
         System.out.println(player.getName() + " wins!");
         // End the game
     }   
 
     public int[][] getBoard() {
         return board;
+    }
+    public boolean isGameOver() {
+        return gameover;
+    }
+    public Player getWinner() {
+        return winner;
     }
     public ArrayList<int[]> getAllMoves(){
         return allMoves;

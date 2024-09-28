@@ -10,6 +10,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import java.net.InetSocketAddress;
 
 public class MyWebSocketServer extends WebSocketServer {
+    private Gameboard gameboard;
 
     public MyWebSocketServer(InetSocketAddress address) {
         super(address);
@@ -18,15 +19,14 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New connection: " + conn.getRemoteSocketAddress());
-        Player player1 = new Player("Alice", 1);
-        Player player2 = new Player("Bob", -1);
+        Player player1 = new Player("White", 1);
+        Player player2 = new Player("Balck", -1);
 
-        Gameboard gameboard = new Gameboard(player1, player2);
-        Gson gson = new Gson();
-        String gameboardJson = gson.toJson(gameboard.getBoard());
+        this.gameboard = new Gameboard(player1, player2);
+        
 
         // Send the JSON string to the client
-        conn.send(gameboardJson);
+        conn.send(getGameboard());
     }
 
     @Override
@@ -37,7 +37,14 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         System.out.println("Received message from " + conn.getRemoteSocketAddress() + ": " + message);
-        conn.send("Message received: " + message); // Echo the message back to the client
+        int[] move = parseFourDigitNumber(message);
+        if(gameboard.movePiece(move[0], move[1], move[2], move[3])){
+            
+            conn.send(getGameboard());
+        }
+
+
+        //conn.send("Message received: " + message); // Echo the message back to the client
     }
 
     @Override
@@ -48,6 +55,43 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Server started successfully!");
+    }
+
+    public int[] parseFourDigitNumber(String number) {
+        if (number.length() != 4) {
+            throw new IllegalArgumentException("The input string must be exactly 4 characters long.");
+        }
+        int[] digits = new int[4];
+        for (int i = 0; i < 4; i++) {
+            digits[i] = Character.getNumericValue(number.charAt(i));
+        }
+        return digits;
+    }
+
+    public String getGameboard() {
+        Gson gson = new Gson();
+        String gameboardJson = gson.toJson(gameboard.getBoard());
+        String msg=" ";
+        if (gameboard.isGameOver()) {
+            msg=gameboard.getWinner().getName() + " wins!";
+        }else{
+            if (gameboard.getCurrentPlayer()==1) {
+                msg="White's turn";
+            }else{
+                msg="Black's turn";
+            }
+        }
+
+        int[][] intBoard = gameboard.getBoard();
+        String[][] stringBoard = new String[intBoard.length][intBoard[0].length];
+
+        for (int i = 0; i < intBoard.length; i++) {
+            for (int j = 0; j < intBoard[i].length; j++) {
+                stringBoard[i][j] = String.valueOf(intBoard[i][j]);
+            }
+        }
+
+        return gson.toJson(new String[]{gameboardJson, msg});
     }
 
     public static void main(String[] args) {
