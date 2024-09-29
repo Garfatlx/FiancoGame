@@ -15,6 +15,13 @@ public class Bot {
         this.state = state;
     }
 
+    public int[] generateMoves() {
+        // Implement bot move generation logic
+        negamax(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 2);
+        System.out.println("Best move: " + bestMove[0] + bestMove[1] + bestMove[2] + bestMove[3]);
+        return bestMove;
+    }
+
     // Negamax search function
     public int negamax(Gameboard state, int alpha, int beta, int depth) {
         int oldAlpha = alpha;
@@ -79,14 +86,55 @@ public class Bot {
     // Evaluate the board state
     private int evaluateBoard(Gameboard state) {
         // Implement board evaluation logic
-        return 0;
+        int currentpalayer = state.getCurrentPlayer();
+        int sumscore = 0;
+        if(state.getWinner() != null && state.getWinner().getColor() == currentpalayer){
+            return 1000;
+        }
+        else if(state.getWinner() != null && state.getWinner().getColor() == 0-currentpalayer){
+            return -1000;
+        }
+
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(state.getBoard()[i][j] == currentpalayer){
+
+                    //feature 1: distance to the destination
+                    if(currentpalayer == 1){
+                    sumscore += 8-i;
+                    }
+                    else{
+                        sumscore += i;
+                    }
+
+                    //feature 2: number of pieces
+                    sumscore += 1;
+
+                    //feature 3: number of pieces that can be captured
+                    sumscore += state.scanCapture(currentpalayer).size();
+
+                    //feature 4: number of pieces that can be captured by the opponent
+                    sumscore -= state.scanCapture(0-currentpalayer).size();
+
+                    //feature 5: possible advance
+
+                }
+            }
+        }
+
+
+        return sumscore;
     }
 
     // Generate all possible moves
     private List<int[]> generateMoves(Gameboard state) {
-
+        List<int[]> moves = new ArrayList<int[]>();
+        moves = state.possibleMoves(state.getCurrentPlayer());
+        for(int i=0; i<moves.size(); i++){
+            System.out.println(moves.get(i)[0] + " " + moves.get(i)[1] + " " + moves.get(i)[2] + " " + moves.get(i)[3]);
+        }
         // Implement move generation logic
-        return state.possibleMoves();
+        return moves;
     }
 
     // Apply a move to the board
@@ -114,7 +162,7 @@ public class Bot {
         long hash = 0;
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
-                hash ^= Zobrist.zobristTable[i][j][state.getBoard()[i][j]];
+                hash ^= Zobrist.zobristTable[i][j][state.getBoard()[i][j]+1];
             }
         }
         hash ^= Zobrist.zobristTable[9][9][state.getCurrentPlayer()+1];

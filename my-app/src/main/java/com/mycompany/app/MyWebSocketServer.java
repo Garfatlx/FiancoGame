@@ -37,9 +37,23 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         System.out.println("Received message from " + conn.getRemoteSocketAddress() + ": " + message);
-        int[] move = parseFourDigitNumber(message);
+        if (message.equals("reset")) {
+            Player player1 = new Player("White", 1);
+            Player player2 = new Player("Balck", -1);
+
+            this.gameboard = new Gameboard(player1, player2);
+            conn.send(getGameboard());
+            return;
+        }
+        int[] move;
+        if(message.equals("BotMove")){
+            Bot bot = new Bot(gameboard);
+            System.out.println(gameboard.getCurrentPlayer());
+            move = bot.generateMoves();
+        }else{
+            move = parseFourDigitNumber(message);
+        }
         if(gameboard.movePiece(move[0], move[1], move[2], move[3])){
-            
             conn.send(getGameboard());
         }
 

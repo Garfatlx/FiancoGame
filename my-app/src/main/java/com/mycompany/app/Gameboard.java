@@ -11,7 +11,7 @@ public class Gameboard{
     private Player player2; 
     private int currentPlayer;
     private boolean gameover = false;
-    private Player winner;
+    private Player winner=null;
     private ArrayList<int[]> allMoves = new ArrayList<int[]>();
 
     public Gameboard(Player player1, Player player2) {
@@ -109,6 +109,9 @@ public class Gameboard{
         int piece = board[endX][endY];
         board[startX][startY] = piece;
         board[endX][endY] = 0;
+        if(Math.abs(startX - endX) == 2 && Math.abs(startY - endY) == 2){
+            board[(startX + endX) / 2][(startY + endY) / 2] = (piece == 1) ? -1 : 1;
+        }
         currentPlayer = (currentPlayer == 1) ? -1 : 1;
         allMoves.remove(allMoves.size()-1);
         //piece.move(startX, startY);
@@ -148,16 +151,16 @@ public class Gameboard{
         return false;
     }
 
-    public ArrayList<int[]> possibleMoves(){
+    public ArrayList<int[]> possibleMoves(int player){
         // Implement scan for possible moves
         ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
-        possibleMoves=scanCapture(currentPlayer);
+        possibleMoves=scanCapture(player);
         if(possibleMoves.size() > 0){
             return possibleMoves;
         }
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
-                if(board[i][j] != 0 && board[i][j]==currentPlayer){
+                if(board[i][j] != 0 && board[i][j]==player){
                     if(board[i][j]== -1){
                         if(i+1 < 9 && j < 9 && board[i+1][j] == 0){
                             possibleMoves.add(new int[]{i, j, i+1, j});
@@ -247,10 +250,10 @@ public class Gameboard{
                 return -1;
             }
         }
-        if(possibleMoves().size() == 0){
+        if(possibleMoves(0-currentPlayer).size() == 0){
             gameover = true;
-            System.out.println("No possible moves. Draw!");
-            return 2;
+            endGame((currentPlayer == 1) ? player1 : player2);
+            return (currentPlayer == 1) ? 1 : -1;
         }
         // Check for win condition
         return 0;
