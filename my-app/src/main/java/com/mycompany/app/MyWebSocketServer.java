@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 
 public class MyWebSocketServer extends WebSocketServer {
     private Gameboard gameboard;
+    private int[] lastMove;
 
     public MyWebSocketServer(InetSocketAddress address) {
         super(address);
@@ -45,6 +46,11 @@ public class MyWebSocketServer extends WebSocketServer {
             conn.send(getGameboard());
             return;
         }
+        if(message.equals("undo")){
+            gameboard.undoMove(lastMove[0], lastMove[1], lastMove[2], lastMove[3]);
+            conn.send(getGameboard());
+            return;
+        }
         int[] move;
         if(message.equals("BotMove")){
             Bot bot = new Bot(gameboard);
@@ -56,6 +62,7 @@ public class MyWebSocketServer extends WebSocketServer {
         if(gameboard.movePiece(move[0], move[1], move[2], move[3])){
             conn.send(getGameboard());
         }
+        lastMove = move;
 
 
         //conn.send("Message received: " + message); // Echo the message back to the client

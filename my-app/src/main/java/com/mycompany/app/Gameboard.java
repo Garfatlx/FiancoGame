@@ -114,6 +114,8 @@ public class Gameboard{
         }
         currentPlayer = (currentPlayer == 1) ? -1 : 1;
         allMoves.remove(allMoves.size()-1);
+        winner = null;
+        gameover = false;
         //piece.move(startX, startY);
         return true;
     }
@@ -152,6 +154,7 @@ public class Gameboard{
     }
 
     public ArrayList<int[]> possibleMoves(int player){
+        
         // Implement scan for possible moves
         ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
         possibleMoves=scanCapture(player);
@@ -240,18 +243,15 @@ public class Gameboard{
     public int checkWinCondition() {
         for(int i=0; i<9; i++){
             if (board[0][i] == 1) {
-                gameover = true;
                 endGame(player1);
                 return 1;
             }
             if (board[8][i] == -1) {
-                gameover = true;
                 endGame(player2);
                 return -1;
             }
         }
         if(possibleMoves(0-currentPlayer).size() == 0){
-            gameover = true;
             endGame((currentPlayer == 1) ? player1 : player2);
             return (currentPlayer == 1) ? 1 : -1;
         }
@@ -261,7 +261,8 @@ public class Gameboard{
 
     public void endGame(Player player) {
         winner = player;
-        System.out.println(player.getName() + " wins!");
+        gameover = true;
+        //System.out.println(player.getName() + " wins!");
         // End the game
     }   
 

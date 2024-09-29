@@ -7,6 +7,7 @@ public class Bot {
     private Player botplayer; // The player this bot is playing as
     private Gameboard state; // The gameboard this bot is playing on
     private int[] bestMove; // The best move found by the bot
+    private int searchdepth = 5; // The depth of the search tree
 
     private HashMap<Long, TTEntry> transpositionTable = new HashMap<Long, TTEntry>();
 
@@ -17,8 +18,7 @@ public class Bot {
 
     public int[] generateMoves() {
         // Implement bot move generation logic
-        negamax(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 2);
-        System.out.println("Best move: " + bestMove[0] + bestMove[1] + bestMove[2] + bestMove[3]);
+        negamax(state, Integer.MIN_VALUE, Integer.MAX_VALUE, searchdepth);
         return bestMove;
     }
 
@@ -53,14 +53,18 @@ public class Bot {
             undoMove(state, move);
             if(eval > score){
                 score = eval;
-                bestMove = move;
-                if(score > alpha){
-                    alpha = score;
+                if(depth == searchdepth){
+                    bestMove = move;
                 }
-                if(alpha >= beta){
-                    break;
-                }
+                
             }
+            if(score > alpha){
+                alpha = score;
+            }
+            if(score >= beta){
+                break;
+            }
+            
             
         }
         int flag;
@@ -80,7 +84,7 @@ public class Bot {
     // Check if the game is over
     private boolean isGameOver(Gameboard state) {
         // Implement game over logic
-        return false;
+        return state.isGameOver();
     }
 
     // Evaluate the board state
@@ -101,20 +105,20 @@ public class Bot {
 
                     //feature 1: distance to the destination
                     if(currentpalayer == 1){
-                    sumscore += 8-i;
+                    sumscore += (8-i)*2;
                     }
                     else{
-                        sumscore += i;
+                        sumscore += i*2;
                     }
 
                     //feature 2: number of pieces
                     sumscore += 1;
 
                     //feature 3: number of pieces that can be captured
-                    sumscore += state.scanCapture(currentpalayer).size();
+                    sumscore += state.scanCapture(currentpalayer).size()*2;
 
                     //feature 4: number of pieces that can be captured by the opponent
-                    sumscore -= state.scanCapture(0-currentpalayer).size();
+                    sumscore -= state.scanCapture(0-currentpalayer).size()*5;
 
                     //feature 5: possible advance
 
@@ -130,9 +134,9 @@ public class Bot {
     private List<int[]> generateMoves(Gameboard state) {
         List<int[]> moves = new ArrayList<int[]>();
         moves = state.possibleMoves(state.getCurrentPlayer());
-        for(int i=0; i<moves.size(); i++){
-            System.out.println(moves.get(i)[0] + " " + moves.get(i)[1] + " " + moves.get(i)[2] + " " + moves.get(i)[3]);
-        }
+        // for(int i=0; i<moves.size(); i++){
+        //     System.out.println(moves.get(i)[0] + " " + moves.get(i)[1] + " " + moves.get(i)[2] + " " + moves.get(i)[3]);
+        // }
         // Implement move generation logic
         return moves;
     }
