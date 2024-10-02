@@ -27,6 +27,10 @@
             for (let j = 0; j < 9; j++) {
                 const cell = document.createElement('td');
                 cell.id = `${i}${j}`;
+                const rowcoord = 9-i;
+                const colcoord = String.fromCharCode(65 + j);
+                cell.innerText = `${rowcoord}${colcoord}`;
+                cell.style.zIndex = 100;
                 row.appendChild(cell);
 
                 cell.addEventListener('click', function() {
@@ -96,12 +100,15 @@
             for (let i = 0; i < 9; i++) {
                 for (let j = 0; j < 9; j++) {
                     const cell = document.getElementById(`${i}${j}`);
+                    const rowcoord = 9-i;
+                    const colcoord = String.fromCharCode(65 + j);
+                    cell.innerText = `${rowcoord}${colcoord}`;
                     if (parsedBoard[i][j] === -1) {
-                        cell.innerHTML = '<div style="width: 27px; height: 27px; background-color: black; border-radius: 50%;"></div>';
+                        cell.innerHTML = '<div style="width: 27px; height: 27px; background-color: black; border-radius: 50%;color:red;">'+colcoord+rowcoord+'</div>';
                     } else if (parsedBoard[i][j] === 1) {
-                        cell.innerHTML = '<div style="width: 25px; height: 25px; background-color: white; border-radius: 50%;border:solid;"></div>';
+                        cell.innerHTML = '<div style="width: 25px; height: 25px; background-color: white; border-radius: 50%;border:solid;">'+colcoord+rowcoord+'</div>';
                     } else {
-                        cell.innerText = '';
+                        cell.innerText = `${colcoord}${rowcoord}`;
                     }
                 }
             }

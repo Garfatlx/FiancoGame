@@ -93,10 +93,10 @@ public class Bot {
         int currentpalayer = state.getCurrentPlayer();
         int sumscore = 0;
         if(state.getWinner() != null && state.getWinner().getColor() == currentpalayer){
-            return 1000;
+            return 10000;
         }
         else if(state.getWinner() != null && state.getWinner().getColor() == 0-currentpalayer){
-            return -1000;
+            return -10000;
         }
 
         for(int i=0; i<9; i++){
@@ -105,20 +105,20 @@ public class Bot {
 
                     //feature 1: distance to the destination
                     if(currentpalayer == 1){
-                    sumscore += (8-i)*2;
+                    sumscore += Math.pow((8-i),2);
                     }
                     else{
-                        sumscore += i*2;
+                        sumscore += Math.pow(i,2);
                     }
 
                     //feature 2: number of pieces
                     sumscore += 1;
 
                     //feature 3: number of pieces that can be captured
-                    sumscore += state.scanCapture(currentpalayer).size()*2;
+                    sumscore += state.scanCapture(currentpalayer).size()*120;
 
                     //feature 4: number of pieces that can be captured by the opponent
-                    sumscore -= state.scanCapture(0-currentpalayer).size()*5;
+                    sumscore -= state.scanCapture(0-currentpalayer).size()*200;
 
                     //feature 5: possible advance
 
