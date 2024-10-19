@@ -21,7 +21,7 @@ public class MyWebSocketServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("New connection: " + conn.getRemoteSocketAddress());
         Player player1 = new Player("White", 1);
-        Player player2 = new Player("Balck", -1);
+        Player player2 = new Player("Black", -1);
 
         this.gameboard = new Gameboard(player1, player2);
         

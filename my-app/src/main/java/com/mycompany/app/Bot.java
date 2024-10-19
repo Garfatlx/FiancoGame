@@ -4,19 +4,21 @@ import java.util.List;
 import java.util.HashMap;
 
 public class Bot {
-    private Player botplayer; // The player this bot is playing as
+    private int botplayer; // The player this bot is playing as
     private Gameboard state; // The gameboard this bot is playing on
     private int[] bestMove; // The best move found by the bot
-    private int searchdepth = 8; // The depth of the search tree
+    private int searchdepth = 7; // The depth of the search tree
 
     private HashMap<Long, TTEntry> transpositionTable = new HashMap<Long, TTEntry>();
 
     public Bot(Gameboard state) {
        
         this.state = state;
+        this.botplayer = state.getCurrentPlayer();
     }
 
     public int[] generateMoves() {
+        
         // Implement bot move generation logic
         negamax(state, Integer.MIN_VALUE, Integer.MAX_VALUE, searchdepth);
         return bestMove;
@@ -24,6 +26,7 @@ public class Bot {
 
     // Negamax search function
     public int negamax(Gameboard state, int alpha, int beta, int depth) {
+        
         int oldAlpha = alpha;
 
         long hash = zobristHash(state);
@@ -46,6 +49,16 @@ public class Bot {
         if (isGameOver(state) || depth == 0) {
             return evaluateBoard(state);
         }
+        // Null move pruning
+        if (depth > 3 ) {
+            state.switchPlayer();
+            int nullMoveScore = -negamax(state, -beta, -alpha, depth - 1 - 2);
+            state.switchPlayer();
+            if (nullMoveScore >= beta) {
+                return nullMoveScore;
+            }
+        }
+        
         int score = Integer.MIN_VALUE;
         for (int[] move : generateMoves(state)) {
             applyMove(state, move);
@@ -90,15 +103,24 @@ public class Bot {
     // Evaluate the board state
     private int evaluateBoard(Gameboard state) {
         // Implement board evaluation logic
-        int currentpalayer = state.getCurrentPlayer();
+        int currentpalayer = botplayer;
         int sumscore = 0;
-        if(state.getWinner() != null && state.getWinner().getColor() == currentpalayer){
-            return 10000;
-        }
-        else if(state.getWinner() != null && state.getWinner().getColor() == 0-currentpalayer){
-            return -10000;
-        }
 
+        if(isGameOver(state) && state.getWinner().getColor() == currentpalayer){
+            System.out.println("win");
+            return -100000;
+        }
+        else if(isGameOver(state) && state.getWinner().getColor() == 0-currentpalayer){
+            System.out.println("lose");
+            return 100000;
+        }
+        //if the current player is the bot player, add score
+        if(currentpalayer==state.getCurrentPlayer()){
+            sumscore += 100;
+        }
+        else{
+            sumscore -= 100;
+        }
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
                 if(state.getBoard()[i][j] == currentpalayer){
@@ -124,7 +146,7 @@ public class Bot {
          //feature 4: number of pieces that can be captured by the opponent
          sumscore -= state.scanCapture(0-currentpalayer).size()*150;
 
-        return sumscore;
+        return -sumscore;
     }
 
     // Generate all possible moves

@@ -19,4 +19,8 @@ public class Player {
     public int getColor() {
         return color;
     }
+
+    public Player copy() {
+        return new Player(name, color);
+    }   
 }

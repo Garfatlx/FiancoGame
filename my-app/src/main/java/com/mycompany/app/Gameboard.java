@@ -95,8 +95,10 @@ public class Gameboard{
 
             int wincondition=checkWinCondition();
             
+            
             currentPlayer = (currentPlayer == 1) ? -1 : 1;
             allMoves.add(new int[]{startX, startY, endX, endY});
+           
             return true;
         }else{
             System.out.println("invalid move");
@@ -114,8 +116,10 @@ public class Gameboard{
         }
         currentPlayer = (currentPlayer == 1) ? -1 : 1;
         allMoves.remove(allMoves.size()-1);
-        winner = null;
-        gameover = false;
+        if(winner!=null){
+            winner = null;
+            gameover = false;
+        }
         //piece.move(startX, startY);
         return true;
     }
@@ -255,13 +259,13 @@ public class Gameboard{
             endGame((currentPlayer == 1) ? player1 : player2);
             return (currentPlayer == 1) ? 1 : -1;
         }
-        // Check for win condition
         return 0;
     }
 
     public void endGame(Player player) {
-        winner = player;
+        winner = player.copy();
         gameover = true;
+        System.out.println(winner.getName() + " wins!");
         //System.out.println(player.getName() + " wins!");
         // End the game
     }   
@@ -280,6 +284,9 @@ public class Gameboard{
     }
     public int getCurrentPlayer() {
         return currentPlayer;
+    }
+    public void switchPlayer(){
+        currentPlayer = (currentPlayer == 1) ? -1 : 1;
     }
 
     public int[] positionConverter(String position) {
